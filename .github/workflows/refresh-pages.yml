@@ -1,0 +1,82 @@
+name: Refresh dashboard and deploy Pages
+
+on:
+  schedule:
+    # 08:00 Asia/Shanghai (UTC+8)
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test dashboard logic
+        run: |
+          node tests/test_ui.js
+          python -m unittest discover -s tests -v
+
+      - name: Collect latest 72 hours
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf evidence
+          python dashboard.py --hours 72
+
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site
+          cp index.html batches.csv _site/
+          touch _site/.nojekyll
+
+      - name: Upload evidence for troubleshooting
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: collection-evidence-${{ github.run_id }}
+          path: |
+            evidence/
+            batches.csv
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
