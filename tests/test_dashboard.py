@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from dashboard import (
     build_batches,
     extract_focus_job_links,
+    extract_pr_base_ref,
     merge_run_evidence,
     parse_job_header,
     parse_pr_base_html,
@@ -118,6 +119,10 @@ class PercentileTests(unittest.TestCase):
 
 
 class HtmlEvidenceTests(unittest.TestCase):
+    def test_pr_api_payload_extracts_merge_target_branch(self):
+        self.assertEqual(extract_pr_base_ref({"base": {"ref": "release/3.3"}}), "release/3.3")
+        self.assertIsNone(extract_pr_base_ref({}))
+
     def test_pr_page_parser_extracts_merge_target_branch(self):
         source = '<script type="application/json">{"pullRequest":{"baseBranch":"release/3.2.2","headBranch":"feature"}}</script>'
         self.assertEqual(parse_pr_base_html(source), "release/3.2.2")

@@ -135,6 +135,11 @@ def parse_pr_base_html(source):
     return html.unescape(match.group(1)) if match else None
 
 
+def extract_pr_base_ref(payload):
+    """Read the target branch from GitHub's pull request API response."""
+    return ((payload or {}).get("base") or {}).get("ref")
+
+
 def merge_run_evidence(api_row, page_row):
     """Combine sources while retaining authoritative REST lifecycle fields."""
     merged={**api_row,**page_row}
@@ -320,7 +325,7 @@ def augment_focus_jobs(runs, as_of):
     return runs
 
 
-def augment_base_branches(runs, fetch_missing=False):
+def augment_base_branches(runs, fetch_missing=False, api=None):
     """Attach each PR's merge target branch, preferring API evidence and cached PR pages."""
     by_pr={}
     for row in runs:
@@ -329,11 +334,22 @@ def augment_base_branches(runs, fetch_missing=False):
             if ref and row.get("pr"): by_pr[row["pr"]]=ref
     prs={row.get("pr") for row in runs if row.get("pr")}
     def resolve(pr):
+        if api is not None:
+            try:
+                payload,_=api.get(f"/pulls/{pr}")
+                return pr,extract_pr_base_ref(payload)
+            except Exception:
+                # Missing branch metadata must not abort the full dashboard refresh.
+                return pr,None
         cache=EVIDENCE/"pr-pages"/f"{pr}.html"
         if cache.exists(): source=cache.read_text(encoding="utf-8")
         elif fetch_missing:
             request=urllib.request.Request(f"https://github.com/{REPO}/pull/{pr}",headers={"User-Agent":"Mozilla/5.0 triton-gate-e2e"})
-            with urllib.request.urlopen(request,timeout=45) as response: source=response.read().decode("utf-8","replace")
+            try:
+                with urllib.request.urlopen(request,timeout=45) as response: source=response.read().decode("utf-8","replace")
+            except urllib.error.HTTPError as exc:
+                if exc.code in (403,429): return pr,None
+                raise
             cache.parent.mkdir(parents=True,exist_ok=True);cache.write_text(source,encoding="utf-8")
         else: return pr,None
         return pr,parse_pr_base_html(source)
@@ -402,7 +418,7 @@ def collect(hours=72, as_of=None):
                     row["head_sha"]=nearest.get("head_sha")
             if not row.get("head_sha") or row.get("head_sha")==row.get("base_sha"):
                 row["head_sha"]=f"pr-{row['pr']}-{row.get('created_at','unknown')[:16]}"
-    enriched=augment_base_branches(enriched,fetch_missing=True)
+    enriched=augment_base_branches(enriched,fetch_missing=True,api=api)
     enriched=augment_focus_jobs(enriched,iso(end))
     _write_json(EVIDENCE/"enriched-runs.json", enriched)
     return build_payload(enriched, iso(start), iso(end), iso(datetime.now(UTC)), api.calls)
