@@ -2,8 +2,8 @@ name: Refresh dashboard and deploy Pages
 
 on:
   schedule:
-    # 08:00 Asia/Shanghai (UTC+8)
-    - cron: "0 0 * * *"
+    # 08:00, 13:00, 18:00 and 20:00 Asia/Shanghai (UTC+8)
+    - cron: "0 0,5,10,12 * * *"
   workflow_dispatch:
 
 permissions:

@@ -12,7 +12,7 @@
 
 ## 自动更新与发布
 
-工作流 [Refresh dashboard and deploy Pages](.github/workflows/refresh-pages.yml) 每天北京时间 08:00 重新采集最近 72 小时数据并发布到 GitHub Pages，也支持在 Actions 页面手动运行。
+工作流 [Refresh dashboard and deploy Pages](.github/workflows/refresh-pages.yml) 每天北京时间 08:00、13:00、18:00、20:00 重新采集最近 72 小时数据并发布到 GitHub Pages，也支持在 Actions 页面手动运行。
 
 工作流每次从空证据目录重新采集。采集证据会作为 Actions artifact 保存 7 天，页面只发布 `index.html` 和 `batches.csv`。
 
