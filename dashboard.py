@@ -153,7 +153,7 @@ def merge_run_evidence(api_row, page_row):
 def _job(row):
     start = dt(row.get("started_at"))
     end = dt(row.get("completed_at"))
-    created = dt(row.get("created_at")) or start
+    created = dt(row.get("created_at"))
     return {
         "id": row.get("id"), "name": row.get("name") or "未命名任务",
         "status": row.get("status"), "conclusion": row.get("conclusion"),
@@ -164,6 +164,20 @@ def _job(row):
         "run_seconds": max(0, (end-start).total_seconds()) if start and end else row.get("duration_seconds"),
         "failed_steps": [s.get("name") for s in row.get("steps", []) if s.get("conclusion") in ("failure", "timed_out", "action_required")],
     }
+
+
+def focus_from_jobs(jobs):
+    import re
+    result=[]
+    for raw in jobs:
+        name=raw.get("name", "")
+        chip=re.search(r"linux-(?:aarch64|amd64)-(a[35])-",name)
+        py=re.search(r"py(3\.(?:10|11|12))",name)
+        if chip and py:
+            job=_job(raw)
+            job["key"]=chip[1]+"-py"+py[1].replace(".","")
+            result.append(job)
+    return result
 
 
 def _is_npu_job(job):
@@ -226,6 +240,7 @@ def build_batches(runs, as_of):
         base_branch=next((r.get("base_branch") for r in rows if r.get("base_branch")),None)
         npu_jobs=[job for workflow in workflows for job in workflow["jobs"] if _is_npu_job(job)]
         npu_waits=[job["wait_seconds"] for job in npu_jobs if job.get("wait_seconds") is not None]
+        npu_missing=any(r.get("jobs_complete") is False for r in rows) or any(j.get("wait_seconds") is None and j.get("conclusion")!="skipped" for j in npu_jobs)
         missing = []
         if any(not r.get("jobs_complete") for r in rows): missing.append("部分 workflow 的 job 明细未采集")
         if not first.get("pr"): missing.append("未可靠关联 PR")
@@ -241,7 +256,7 @@ def build_batches(runs, as_of):
             "approximate": not exact, "critical_workflow": critical.get("name"),
             "action_url": action.get("html_url"), "action_name": action.get("name") or "GitHub Actions",
             "workflows": workflows, "focus_jobs":focus_jobs, "npu_jobs":npu_jobs,
-            "npu_queue_seconds":max(npu_waits) if npu_waits else None, "missing": missing,
+            "npu_data_missing": npu_missing, "npu_queue_seconds":max(npu_waits) if npu_waits and not npu_missing else None, "missing": missing,
         })
     batches.sort(key=lambda b: b["start_at"])
     by_pr=defaultdict(list)
@@ -379,32 +394,35 @@ def collect(hours=72, as_of=None):
     runs=list(unique.values())
     _write_json(EVIDENCE/"runs.json", {"collected_at":iso(datetime.now(UTC)),"window_start":iso(start),"window_end":iso(end),"runs":runs})
 
-    # Public HTML is not charged against REST quota and contains PR linkage plus the run graph.
-    def fetch_page(r):
-        url=r.get("html_url") or f"https://github.com/{REPO}/actions/runs/{r['id']}"
-        page_file=EVIDENCE/"run-pages"/f"{r['id']}.html"
-        if page_file.exists(): source=page_file.read_text(encoding="utf-8")
-        else:
-            req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 triton-gate-e2e"})
-            with urllib.request.urlopen(req,timeout=45) as response: source=response.read().decode("utf-8","replace")
-            page_file.parent.mkdir(parents=True,exist_ok=True);page_file.write_text(source,encoding="utf-8")
-        parsed=parse_run_html(source)
-        return r,parsed
+    # Use authenticated REST timestamps; HTML headers are rate-limited and incomplete.
     enriched=[]
-    with ThreadPoolExecutor(max_workers=16) as pool:
-        futures={pool.submit(fetch_page,r):r for r in runs}
-        for index,future in enumerate(as_completed(futures),1):
-            try:
-                r,parsed=future.result(); row=merge_run_evidence(r,parsed)
-                row.update({"pr_url":f"https://github.com/{REPO}/pull/{parsed['pr']}" if parsed["pr"] else None,
-                            "author":(r.get("actor") or {}).get("login"),"branch":r.get("head_branch"),
-                            "trigger_at":None,"trigger_exact":False,
-                            "jobs_complete":bool(parsed["jobs"]) or r.get("conclusion") in ("skipped","neutral")})
-                enriched.append(row)
-            except Exception as exc:
-                r=futures[future]; enriched.append({**r,"pr":None,"trigger_at":None,"trigger_exact":False,
-                    "jobs":[],"jobs_complete":False,"jobs_error":str(exc)})
-            if index%50==0: print(f"run pages {index}/{len(runs)}",flush=True)
+    for index,r in enumerate(runs,1):
+        row=dict(r)
+        prs=r.get("pull_requests") or []
+        if not prs:
+            try: prs=api.pages(f"/commits/{r['head_sha']}/pulls")
+            except Exception: prs=[]
+        pr=prs[0] if len(prs)==1 else {}
+        row.update(pr=pr.get("number"),pr_url=pr.get("html_url"),
+                   pr_title=pr.get("title") or r.get("display_title"),
+                   base_branch=(pr.get("base") or {}).get("ref"),
+                   author=(r.get("actor") or {}).get("login"),branch=r.get("head_branch"),
+                   trigger_at=None,trigger_exact=False)
+        if pr.get("head",{}).get("sha")==r.get("head_sha"):
+            row["head_sha"]=pr["head"]["sha"]
+        try:
+            jobs=api.pages(f"/actions/runs/{r['id']}/attempts/{r.get('run_attempt') or 1}/jobs","jobs")
+            row.update(jobs=jobs,jobs_complete=True)
+            _write_json(EVIDENCE/"jobs"/f"{r['id']}-{r.get('run_attempt') or 1}.json",jobs)
+        except Exception as exc:
+            row.update(jobs=[],jobs_complete=False,jobs_error=str(exc))
+        row["focus_jobs"]=focus_from_jobs(row["jobs"])
+        enriched.append(row)
+        if index%50==0: print(f"REST jobs {index}/{len(runs)}",flush=True)
+    failed_jobs=[r for r in enriched if not r.get("jobs_complete")]
+    if failed_jobs:
+        _write_json(EVIDENCE/"collection-errors.json", failed_jobs)
+        raise RuntimeError(f"{len(failed_jobs)} workflow job lists could not be collected; refusing to publish incomplete refresh")
     # Match pull_request_target rows to the nearest native PR run, avoiding base SHA as head identity.
     native=defaultdict(list)
     for row in enriched:
@@ -419,7 +437,7 @@ def collect(hours=72, as_of=None):
             if not row.get("head_sha") or row.get("head_sha")==row.get("base_sha"):
                 row["head_sha"]=f"pr-{row['pr']}-{row.get('created_at','unknown')[:16]}"
     enriched=augment_base_branches(enriched,fetch_missing=True,api=api)
-    enriched=augment_focus_jobs(enriched,iso(end))
+
     _write_json(EVIDENCE/"enriched-runs.json", enriched)
     return build_payload(enriched, iso(start), iso(end), iso(datetime.now(UTC)), api.calls)
 
