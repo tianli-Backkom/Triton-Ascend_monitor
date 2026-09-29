@@ -48,7 +48,7 @@ jobs:
       - name: Prepare Pages artifact
         run: |
           mkdir -p _site
-          cp index.html batches.csv _site/
+          cp index.html batches.csv manifest.json _site/
           touch _site/.nojekyll
 
       - name: Upload evidence for troubleshooting
@@ -61,6 +61,21 @@ jobs:
             batches.csv
           retention-days: 7
           if-no-files-found: warn
+
+      - name: Save deployment verification files
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-verification
+          path: |
+            manifest.json
+            quality.py
+            verify_deployment.py
+
+      - name: Report build failure
+        if: failure()
+        run: |
+          echo "::error::Refresh failed. Previous Pages deployment is retained. Inspect collection evidence and quality-report.json."
+          echo "### Dashboard refresh failed: previous successful data retained" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -80,3 +95,19 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: deployment-verification
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify published data
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python verify_deployment.py "$PAGE_URL" manifest.json
+      - name: Report verification failure
+        if: failure()
+        run: |
+          echo "::error::Pages deployment or published-data verification failed. Inspect this run before trusting the refresh."
+          echo "### Pages deployment verification failed" >> "$GITHUB_STEP_SUMMARY"

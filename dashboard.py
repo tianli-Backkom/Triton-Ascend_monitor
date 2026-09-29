@@ -160,7 +160,8 @@ def _job(row):
         "created_at": row.get("created_at"), "started_at": row.get("started_at"),
         "completed_at": row.get("completed_at"), "url": row.get("html_url"),
         "runner_name": row.get("runner_name"), "runner_label": row.get("runner_label"),
-        "wait_seconds": max(0, (start-created).total_seconds()) if start and created else None,
+        "wait_seconds": (start-created).total_seconds() if start and created and start >= created else None,
+        "measurement_error": "源时间戳异常：开始时间早于创建时间" if start and created and start < created else None,
         "run_seconds": max(0, (end-start).total_seconds()) if start and end else row.get("duration_seconds"),
         "failed_steps": [s.get("name") for s in row.get("steps", []) if s.get("conclusion") in ("failure", "timed_out", "action_required")],
     }
@@ -293,11 +294,20 @@ class GitHub:
                 raise
 
     def pages(self, path, field=None, limit=None):
-        out=[]; page=1
+        out=[]; page=1; expected=None; seen=set()
         while True:
             sep="&" if "?" in path else "?"
             data,_=self.get(f"{path}{sep}per_page=100&page={page}")
             rows=data.get(field, []) if field else data
+            if field=="jobs":
+                if "jobs" not in data: raise RuntimeError("Jobs response missing jobs field")
+                expected=data.get("total_count",expected)
+                for row in rows:
+                    identity=row.get("id")
+                    if identity is not None and identity in seen: raise RuntimeError("Duplicate job across pages")
+                    if identity is not None: seen.add(identity)
+                if len(rows)<100 and expected is not None and len(out)+len(rows)!=expected:
+                    raise RuntimeError("Incomplete Jobs pagination")
             out.extend(rows)
             if len(rows)<100 or (limit and len(out)>=limit): return out[:limit] if limit else out
             page += 1
@@ -483,7 +493,13 @@ def main():
             runs=augment_focus_jobs(runs,meta["window_end"]);_write_json(EVIDENCE/"enriched-runs.json",runs)
         payload=build_payload(runs,meta["window_start"],meta["window_end"],meta["collected_at"])
     else: payload=collect(args.hours,args.as_of)
+    from quality import validate, fingerprint
+    report=validate(runs if args.from_evidence else json.loads((EVIDENCE/"enriched-runs.json").read_text(encoding="utf-8")),payload)
+    _write_json(EVIDENCE/"quality-report.json",report)
+    if not report["passed"]:
+        raise RuntimeError("Data quality gate failed: "+"; ".join(report["errors"][:10]))
     render(payload)
+    _write_json(ROOT/"manifest.json",{"sha256":fingerprint(payload),"collected_at":payload["collected_at"],**report})
     print(f"Generated {ROOT/'index.html'} with {len(payload['batches'])} batches")
 
 
