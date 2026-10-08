@@ -14,6 +14,12 @@ def validate(runs, payload):
     represented={j.get("id") for b in payload["batches"] for j in b.get("npu_jobs",[])}
     for run in runs:
         prefix=f"run {run.get('id')}"
+        if run.get("event") in ("pull_request","pull_request_target"):
+            proof=run.get("pr_evidence") or {}
+            if not run.get("pr") or not run.get("pr_url") or not run.get("base_branch") or not run.get("pr_title"):
+                errors.append(prefix+": missing PR identity or metadata")
+            if proof.get("run_id")!=run.get("id") or not proof.get("method") or proof.get("pr")!=run.get("pr") or proof.get("resolved_head_sha")!=run.get("head_sha"):
+                errors.append(prefix+": missing or inconsistent PR association evidence")
         if not run.get("jobs_complete"):
             errors.append(prefix+": incomplete job list")
         for job in run.get("jobs", []):
@@ -37,6 +43,10 @@ def validate(runs, payload):
                 if ended and started and ended<started: errors.append(key+"negative execution time")
             except (ValueError,TypeError): errors.append(key+"invalid timestamp")
     for batch in payload["batches"]:
+        for workflow in batch.get("workflows",[]):
+            if workflow.get("event") in ("pull_request","pull_request_target"):
+                if workflow.get("pr")!=batch.get("pr") or workflow.get("head_sha")!=batch.get("sha") or not batch.get("pr_url"):
+                    errors.append(f"batch {batch['id']}: PR association lost during aggregation")
         jobs=batch.get("npu_jobs",[])
         values=[]
         for job in jobs:

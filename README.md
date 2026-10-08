@@ -45,3 +45,9 @@ GitHub 源时间戳倒置的任务显式标记异常，相关批次不参与排�
 每次构建产生 `manifest.json`，发布后 `verify_deployment.py` 对公开页面的完整内嵌数据计算 SHA-256 并与构建结果比对，最多重试 8 次。失败会使 Actions 运行失败并生成错误注释及运行摘要；此检查发生在部署后，不自动回滚。
 
 页面每分钟检查数据新鲜度。按北京时间 08:00、13:00、18:00、20:00 的计划及 90 分钟采集发布宽限期显示更新延迟提醒。Actions 失败的外部邮件通知由仓库订阅者的 GitHub 通知设置控制，本项目不配置邮件收件人。
+
+## PR 关联证据
+
+Fork PR 的 workflow `pull_requests` 和 commit 关联接口可能同时返回空数组。采集器优先使用 run 显式 PR 关联；回退以来源仓库、分支、真实 head SHA 或 PR 提交历史校验候选，查询包括已关闭 PR，并完整分页和缓存。PR 编号、标题、链接及目标分支均从 PR 元数据获取，不以运行标题或时间接近猜测关联，也不再按最近 run 覆盖 `pull_request_target` 的 SHA。
+
+关联依据写入 `evidence/pr-associations/`。无法唯一关联或 API 查询失败会保存 `pr-association-errors.json`，阻止本次发布；质量检查同时验证关联证据及聚合前后 PR/SHA 一致性。未知运行按 run ID 隔离，避免相同 SHA 被误并。

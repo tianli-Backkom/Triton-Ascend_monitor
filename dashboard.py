@@ -198,7 +198,7 @@ def build_batches(runs, as_of):
         else:
             # A pushed commit is the E2E identity. Auxiliary workflows may start much later,
             # but they still belong to the same PR head SHA and must not create extra dots.
-            key = (row.get("pr"), row.get("head_sha"), "initial")
+            key = (row.get("pr"), row.get("head_sha"), "initial") if row.get("pr") else (None, row.get("head_sha"), "unresolved", row.get("id"))
         groups[key].append(row)
     batches = []
     for key, rows in groups.items():
@@ -236,6 +236,7 @@ def build_batches(runs, as_of):
                 "url": r.get("html_url"), "attempt": r.get("run_attempt") or 1,
                 "jobs": [_job(j) for j in r.get("jobs", [])],
                 "jobs_complete": bool(r.get("jobs_complete")),
+                "event":r.get("event"), "pr":r.get("pr"), "pr_url":r.get("pr_url"), "head_sha":r.get("head_sha"), "pr_evidence":r.get("pr_evidence"),
             })
         first = rows[0]
         base_branch=next((r.get("base_branch") for r in rows if r.get("base_branch")),None)
@@ -404,22 +405,20 @@ def collect(hours=72, as_of=None):
     runs=list(unique.values())
     _write_json(EVIDENCE/"runs.json", {"collected_at":iso(datetime.now(UTC)),"window_start":iso(start),"window_end":iso(end),"runs":runs})
 
-    # Use authenticated REST timestamps; HTML headers are rate-limited and incomplete.
+    # PRs from forks can have empty run.pull_requests and commit/pulls responses.
+    from pr_identity import PRResolver
+    resolver=PRResolver(api,EVIDENCE/"pr-associations")
     enriched=[]
+    association_errors=[]
     for index,r in enumerate(runs,1):
         row=dict(r)
-        prs=r.get("pull_requests") or []
-        if not prs:
-            try: prs=api.pages(f"/commits/{r['head_sha']}/pulls")
-            except Exception: prs=[]
-        pr=prs[0] if len(prs)==1 else {}
-        row.update(pr=pr.get("number"),pr_url=pr.get("html_url"),
-                   pr_title=pr.get("title") or r.get("display_title"),
-                   base_branch=(pr.get("base") or {}).get("ref"),
-                   author=(r.get("actor") or {}).get("login"),branch=r.get("head_branch"),
+        try:
+            row.update(resolver.resolve(r))
+        except Exception as exc:
+            association_errors.append({"run_id":r["id"],"url":r.get("html_url"),"error":str(exc)})
+            continue
+        row.update(author=(r.get("actor") or {}).get("login"),branch=r.get("head_branch"),
                    trigger_at=None,trigger_exact=False)
-        if pr.get("head",{}).get("sha")==r.get("head_sha"):
-            row["head_sha"]=pr["head"]["sha"]
         try:
             jobs=api.pages(f"/actions/runs/{r['id']}/attempts/{r.get('run_attempt') or 1}/jobs","jobs")
             row.update(jobs=jobs,jobs_complete=True)
@@ -433,20 +432,9 @@ def collect(hours=72, as_of=None):
     if failed_jobs:
         _write_json(EVIDENCE/"collection-errors.json", failed_jobs)
         raise RuntimeError(f"{len(failed_jobs)} workflow job lists could not be collected; refusing to publish incomplete refresh")
-    # Match pull_request_target rows to the nearest native PR run, avoiding base SHA as head identity.
-    native=defaultdict(list)
-    for row in enriched:
-        if row.get("event")=="pull_request" and row.get("pr"): native[row["pr"]].append(row)
-    for row in enriched:
-        if row.get("event")=="pull_request_target" and row.get("pr"):
-            candidates=native[row["pr"]]
-            if candidates:
-                nearest=min(candidates,key=lambda x:abs((dt(x.get("created_at"))-dt(row.get("created_at"))).total_seconds()))
-                if abs((dt(nearest.get("created_at"))-dt(row.get("created_at"))).total_seconds())<=300:
-                    row["head_sha"]=nearest.get("head_sha")
-            if not row.get("head_sha") or row.get("head_sha")==row.get("base_sha"):
-                row["head_sha"]=f"pr-{row['pr']}-{row.get('created_at','unknown')[:16]}"
-    enriched=augment_base_branches(enriched,fetch_missing=True,api=api)
+    if association_errors:
+        _write_json(EVIDENCE/"pr-association-errors.json",association_errors)
+        raise RuntimeError(f"{len(association_errors)} runs have unresolved PR identities; refusing to publish. See pr-association-errors.json")
 
     _write_json(EVIDENCE/"enriched-runs.json", enriched)
     return build_payload(enriched, iso(start), iso(end), iso(datetime.now(UTC)), api.calls)
