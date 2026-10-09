@@ -43,10 +43,16 @@ def pull(number, sha="a" * 40, repo=FORK, created="2026-10-01T00:00:00Z", closed
 
 class FakeAPI:
     """Supply GitHub-shaped responses; query filtering is part of the fake API boundary."""
-    def __init__(self, pulls, commits=None, failure=None):
+    def __init__(self, pulls, commits=None, failure=None, history=None):
         self.pulls = {p["number"]: copy.deepcopy(p) for p in pulls}
         self.commits = commits or {}
         self.failure = failure
+        self.history = history or {}
+
+    def force_push_history(self, number):
+        if self.failure:
+            raise self.failure
+        return copy.deepcopy(self.history.get(number, []))
 
     def response(self, request):
         if self.failure:
@@ -139,6 +145,63 @@ class PRIdentityTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "rate limited"):
             PRResolver(FakeAPI([pull(42)], failure=RuntimeError("rate limited"))).resolve(
                 action_run(associations=[{"number": 42}]))
+
+    def test_force_push_before_commit_recovers_sha_removed_from_current_commits(self):
+        api = FakeAPI([pull(42, "c" * 40)], commits={42: ["c" * 40]}, history={42: [{
+            "createdAt": "2026-10-07T09:00:00Z",
+            "beforeCommit": {"oid": "a" * 40}, "afterCommit": {"oid": "c" * 40},
+        }]})
+        result = PRResolver(api).resolve(action_run())
+        self.assertEqual(result["pr"], 42)
+        self.assertEqual(result["head_sha"], "a" * 40)
+        self.assertEqual(result["pr_title"], "Compiler change 42")
+        self.assertTrue(result["pr_evidence"]["method"])
+
+    def test_force_push_after_commit_recovers_sha_absent_from_current_commits(self):
+        api = FakeAPI([pull(42, "c" * 40)], commits={42: ["c" * 40]}, history={42: [{
+            "createdAt": "2026-10-07T07:59:00Z",
+            "beforeCommit": {"oid": "d" * 40}, "afterCommit": {"oid": "a" * 40},
+        }]})
+        result = PRResolver(api).resolve(action_run())
+        self.assertEqual(result["pr"], 42)
+        self.assertEqual(result["head_sha"], "a" * 40)
+
+    def test_reused_branch_with_unrelated_force_push_history_remains_unresolved(self):
+        api = FakeAPI([pull(41, "c" * 40), pull(42, "d" * 40)],
+                      commits={41: ["c" * 40], 42: ["d" * 40]}, history={
+                          41: [{"createdAt": "2026-10-07T09:00:00Z",
+                                "beforeCommit": {"oid": "e" * 40}, "afterCommit": {"oid": "c" * 40}}],
+                          42: [{"createdAt": "2026-10-07T09:00:00Z",
+                                "beforeCommit": {"oid": "f" * 40}, "afterCommit": {"oid": "d" * 40}}],
+                      })
+        with self.assertRaises(ValueError):
+            PRResolver(api).resolve(action_run())
+
+    def test_force_push_after_commit_event_after_run_does_not_establish_identity(self):
+        api = FakeAPI([pull(42, "c" * 40)], commits={42: ["c" * 40]}, history={42: [{
+            "createdAt": "2026-10-07T09:00:00Z",
+            "beforeCommit": {"oid": "d" * 40}, "afterCommit": {"oid": "a" * 40},
+        }]})
+        with self.assertRaises(ValueError):
+            PRResolver(api).resolve(action_run())
+
+    def test_force_push_before_commit_event_before_run_does_not_establish_identity(self):
+        api = FakeAPI([pull(42, "c" * 40)], commits={42: ["c" * 40]}, history={42: [{
+            "createdAt": "2026-10-07T07:00:00Z",
+            "beforeCommit": {"oid": "a" * 40}, "afterCommit": {"oid": "c" * 40},
+        }]})
+        with self.assertRaises(ValueError):
+            PRResolver(api).resolve(action_run())
+
+    def test_same_source_and_force_push_sha_on_two_prs_is_ambiguous(self):
+        api = FakeAPI([pull(41, "c" * 40), pull(42, "d" * 40)], history={
+            41: [{"createdAt": "2026-10-07T09:00:00Z",
+                  "beforeCommit": {"oid": "a" * 40}, "afterCommit": {"oid": "c" * 40}}],
+            42: [{"createdAt": "2026-10-07T09:00:00Z",
+                  "beforeCommit": {"oid": "a" * 40}, "afterCommit": {"oid": "d" * 40}}],
+        })
+        with self.assertRaises(ValueError):
+            PRResolver(api).resolve(action_run())
 
 
 if __name__ == "__main__":

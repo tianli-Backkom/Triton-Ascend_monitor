@@ -34,6 +34,26 @@ class PRResolver:
         parse=lambda x:datetime.fromisoformat(x.replace("Z","+00:00"))
         return parse(pr["created_at"])<=parse(run["created_at"])
 
+    def historical_head(self, run, number):
+        key=("force_push_history",number)
+        if key not in self.cache:
+            self.cache[key]=self.api.force_push_history(number)
+            if self.evidence_dir:
+                self.evidence_dir.mkdir(parents=True,exist_ok=True)
+                (self.evidence_dir/f"pr-{number}-force-pushes.json").write_text(
+                    json.dumps(self.cache[key],ensure_ascii=False,indent=2),encoding="utf-8")
+        if not run.get("created_at"): return None
+        parse=lambda x:datetime.fromisoformat(x.replace("Z","+00:00"))
+        created=parse(run["created_at"])
+        for event in self.cache[key]:
+            if not isinstance(event,dict) or not event.get("createdAt"):
+                raise ValueError(f"PR {number} force-push event incomplete")
+            when=parse(event["createdAt"])
+            for field,valid in (("beforeCommit",created<=when),("afterCommit",when<=created)):
+                if valid and (event.get(field) or {}).get("oid")==run.get("head_sha"):
+                    return {"matched_field":field,**event}
+        return None
+
     def resolve(self, run):
         linked=run.get("pull_requests") or []
         explicit={p["number"]:p for p in linked if p.get("number")}
@@ -57,22 +77,26 @@ class PRResolver:
             sha=run.get("head_sha")
             snapshot=((explicit.get(number) or {}).get("head") or {}).get("sha")
             if is_linked and snapshot:
-                matches.append((pr,snapshot,"run.pull_requests.head.sha"));continue
+                matches.append((pr,snapshot,"run.pull_requests.head.sha",None));continue
             if sha and sha==(pr.get("head") or {}).get("sha"):
-                matches.append((pr,sha,"source_repository+branch+head_sha"));continue
+                matches.append((pr,sha,"source_repository+branch+head_sha",None));continue
             if sha and any(c.get("sha")==sha for c in self.read(f"/pulls/{number}/commits",many=True)):
-                matches.append((pr,sha,"source_repository+branch+pr_commit_history"))
+                matches.append((pr,sha,"source_repository+branch+pr_commit_history",None));continue
+            history=self.historical_head(run,number) if sha else None
+            if history:
+                matches.append((pr,sha,"source_repository+branch+force_push_history",history))
         # Never guess from title, nearest creation time, or the first branch match.
         matches={p[0]["number"]:p for p in matches}
         if len(matches)!=1:
             diagnostic={"run_id":run.get("id"),"head_sha":run.get("head_sha"),"head_branch":run.get("head_branch"),"candidates":[p.get("number") for p in candidates],"matches":list(matches)}
             self.save(run,diagnostic)
             raise ValueError(f"PR identity unresolved/ambiguous: {diagnostic}")
-        pr,sha,method=next(iter(matches.values()))
+        pr,sha,method,history=next(iter(matches.values()))
         result={"pr":pr["number"],"pr_url":pr.get("html_url") or f"https://github.com/triton-lang/triton-ascend/pull/{pr['number']}",
                 "pr_title":pr.get("title"),"base_branch":(pr.get("base") or {}).get("ref"),"head_sha":sha,
                 "pr_evidence":{"method":method,"run_id":run.get("id"),"pr":pr["number"],"raw_run_sha":run.get("head_sha"),"resolved_head_sha":sha,
                                "source_repository":(pr.get("head",{}).get("repo") or {}).get("full_name"),"head_ref":(pr.get("head") or {}).get("ref")}}
+        if history: result["pr_evidence"]["force_push_event"]=history
         if not result["pr_title"] or not result["base_branch"]:
             raise ValueError(f"PR {pr['number']} metadata incomplete")
         self.save(run,result)

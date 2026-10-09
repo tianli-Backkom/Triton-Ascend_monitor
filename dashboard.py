@@ -274,14 +274,16 @@ class GitHub:
         self.token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
         self.calls = 0
 
-    def get(self, url):
+    def get(self, url, payload=None):
         target = url if url.startswith("https://") else API + url
         headers = {"Accept":"application/vnd.github+json", "User-Agent":"triton-gate-e2e-dashboard", "X-GitHub-Api-Version":"2022-11-28"}
         if self.token: headers["Authorization"] = "Bearer " + self.token
+        data = json.dumps(payload).encode() if payload is not None else None
+        if data is not None: headers["Content-Type"] = "application/json"
         for attempt in range(4):
             try:
                 self.calls += 1
-                with urllib.request.urlopen(urllib.request.Request(target, headers=headers), timeout=45) as response:
+                with urllib.request.urlopen(urllib.request.Request(target, data=data, headers=headers), timeout=45) as response:
                     return json.load(response), dict(response.headers)
             except urllib.error.HTTPError as exc:
                 if exc.code in (403, 429):
@@ -293,6 +295,39 @@ class GitHub:
                 if exc.code >= 500 and attempt < 3:
                     time.sleep(2 ** attempt); continue
                 raise
+
+    def force_push_history(self, number):
+        """Retrieve both sides of force pushes, including commits removed from REST history."""
+        query = """query($number:Int!, $cursor:String) {
+          repository(owner:"triton-lang", name:"triton-ascend") {
+            pullRequest(number:$number) {
+              timelineItems(first:100, after:$cursor, itemTypes:[HEAD_REF_FORCE_PUSHED_EVENT]) {
+                nodes { ... on HeadRefForcePushedEvent {
+                  id createdAt beforeCommit { oid } afterCommit { oid }
+                } }
+                pageInfo { hasNextPage endCursor }
+              }
+            }
+          }
+        }"""
+        out=[]; cursor=None; seen=set()
+        while True:
+            result,_=self.get("https://api.github.com/graphql", {
+                "query":query, "variables":{"number":number,"cursor":cursor}})
+            if result.get("errors"):
+                raise RuntimeError("GitHub PR history query failed: "+json.dumps(result["errors"],ensure_ascii=False))
+            try:
+                page=result["data"]["repository"]["pullRequest"]["timelineItems"]
+                nodes=page["nodes"]; info=page["pageInfo"]
+                if not isinstance(nodes,list) or not isinstance(info["hasNextPage"],bool): raise ValueError()
+            except (KeyError,TypeError,ValueError):
+                raise RuntimeError(f"PR {number} force-push history response incomplete") from None
+            out.extend(nodes)
+            if not info["hasNextPage"]: return out
+            cursor=info.get("endCursor")
+            if not nodes or not cursor or cursor in seen:
+                raise RuntimeError(f"PR {number} history pagination did not advance")
+            seen.add(cursor)
 
     def pages(self, path, field=None, limit=None):
         out=[]; page=1; expected=None; seen=set()

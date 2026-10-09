@@ -19,7 +19,7 @@
 ## 本地生成
 
 ```powershell
-$env:GH_TOKEN = '<GitHub Token>' # 可选；建议设置以提高 API 配额
+$env:GH_TOKEN = '<GitHub Token>' # 强制推送历史的 GraphQL 查询需要认证
 python dashboard.py --hours 72
 ```
 
@@ -50,4 +50,6 @@ GitHub 源时间戳倒置的任务显式标记异常，相关批次不参与排�
 
 Fork PR 的 workflow `pull_requests` 和 commit 关联接口可能同时返回空数组。采集器优先使用 run 显式 PR 关联；回退以来源仓库、分支、真实 head SHA 或 PR 提交历史校验候选，查询包括已关闭 PR，并完整分页和缓存。PR 编号、标题、链接及目标分支均从 PR 元数据获取，不以运行标题或时间接近猜测关联，也不再按最近 run 覆盖 `pull_request_target` 的 SHA。
 
-关联依据写入 `evidence/pr-associations/`。无法唯一关联或 API 查询失败会保存 `pr-association-errors.json`，阻止本次发布；质量检查同时验证关联证据及聚合前后 PR/SHA 一致性。未知运行按 run ID 隔离，避免相同 SHA 被误并。
+强制推送后，旧 SHA 可能从 PR 当前提交列表中消失。采集器完整分页读取 GraphQL `HeadRefForcePushedEvent`，使用 `beforeCommit`、`afterCommit` 和事件发生时间恢复历史 head；不使用 commit 作者时间替代事件时间。重跑保留原 run 创建时间及 SHA。
+
+关联依据和强制推送事件写入 `evidence/pr-associations/`。无法唯一关联或 API 查询失败会保存 `pr-association-errors.json`，阻止本次发布；质量检查同时验证关联证据及聚合前后 PR/SHA 一致性。未知运行按 run ID 隔离，避免相同 SHA 被误并。
