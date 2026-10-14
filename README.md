@@ -53,3 +53,7 @@ Fork PR 的 workflow `pull_requests` 和 commit 关联接口可能同时返回�
 强制推送后，旧 SHA 可能从 PR 当前提交列表中消失。采集器完整分页读取 GraphQL `HeadRefForcePushedEvent`，使用 `beforeCommit`、`afterCommit` 和事件发生时间恢复历史 head；不使用 commit 作者时间替代事件时间。重跑保留原 run 创建时间及 SHA。
 
 关联依据和强制推送事件写入 `evidence/pr-associations/`。无法唯一关联或 API 查询失败会保存 `pr-association-errors.json`，阻止本次发布；质量检查同时验证关联证据及聚合前后 PR/SHA 一致性。未知运行按 run ID 隔离，避免相同 SHA 被误并。
+
+强推端点之间的普通追加提交也可能从当前 PR 提交列表消失。采集器通过 GitHub Compare API 证明旧 run SHA 是 run 创建之后某个 `beforeCommit` 的祖先，同时排除基础分支共同祖先；保留旧 SHA，避免把 `pull_request_target` 的基础 SHA 误认为 PR head。比较证据不完整、接口失败或多个 PR 同时匹配时仍阻止发布。
+
+PR 上的 `Dashboard quality gate` 运行 python-tests、frontend-tests、collector-contracts 和 workflow-lint，全部成功才通过汇总门禁。可在修复分支手动运行 Refresh 工作流验证完整采集及构建；仅 main 分支部署 Pages。真实失败运行 38546744486 的 34 条历史记录保存在测试 fixture 中，作为离线回归样本。

@@ -34,7 +34,15 @@ class PRResolver:
         parse=lambda x:datetime.fromisoformat(x.replace("Z","+00:00"))
         return parse(pr["created_at"])<=parse(run["created_at"])
 
-    def historical_head(self, run, number):
+    def compare(self, sha, anchor):
+        result=self.read(f"/compare/{sha}...{anchor}?per_page=1")
+        if self.evidence_dir:
+            self.evidence_dir.mkdir(parents=True,exist_ok=True)
+            (self.evidence_dir/f"compare-{sha}-{anchor}.json").write_text(
+                json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
+        return result
+
+    def historical_head(self, run, number, base_sha=None):
         key=("force_push_history",number)
         if key not in self.cache:
             self.cache[key]=self.api.force_push_history(number)
@@ -52,6 +60,21 @@ class PRResolver:
             for field,valid in (("beforeCommit",created<=when),("afterCommit",when<=created)):
                 if valid and (event.get(field) or {}).get("oid")==run.get("head_sha"):
                     return {"matched_field":field,**event}
+        # Ordinary pushes between force pushes are not timeline endpoints.
+        # Prove membership in a later pre-force-push head's ancestry.
+        sha=run.get("head_sha")
+        for event in self.cache[key]:
+            anchor=(event.get("beforeCommit") or {}).get("oid")
+            if not anchor or parse(event["createdAt"]) < created: continue
+            comparison=self.compare(sha,anchor)
+            if comparison.get("status") not in ("ahead","identical"): continue
+            if (comparison.get("merge_base_commit") or {}).get("sha")!=sha: continue
+            # Shared upstream ancestry does not prove a PR head; target-event
+            # runs can carry the base SHA. Missing proof still blocks publishing.
+            if not base_sha: continue
+            base=self.compare(sha,base_sha)
+            if base.get("status") not in ("behind","diverged"): continue
+            return {"matched_field":"beforeCommit.ancestor","matched_sha":sha,**event}
         return None
 
     def resolve(self, run):
@@ -82,9 +105,11 @@ class PRResolver:
                 matches.append((pr,sha,"source_repository+branch+head_sha",None));continue
             if sha and any(c.get("sha")==sha for c in self.read(f"/pulls/{number}/commits",many=True)):
                 matches.append((pr,sha,"source_repository+branch+pr_commit_history",None));continue
-            history=self.historical_head(run,number) if sha else None
+            history=self.historical_head(run,number,(pr.get("base") or {}).get("sha")) if sha else None
             if history:
-                matches.append((pr,sha,"source_repository+branch+force_push_history",history))
+                method="source_repository+branch+force_push_history"
+                if history["matched_field"]=="beforeCommit.ancestor": method+="+ancestry"
+                matches.append((pr,sha,method,history))
         # Never guess from title, nearest creation time, or the first branch match.
         matches={p[0]["number"]:p for p in matches}
         if len(matches)!=1:

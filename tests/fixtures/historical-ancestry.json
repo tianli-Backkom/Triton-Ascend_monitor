@@ -1,0 +1,793 @@
+{
+  "runs": [
+    {
+      "id": 38537413492,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537413794,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537413565,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537413684,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537413660,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537413742,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537413998,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537414009,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:41Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38358468898,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:57Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38358468917,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:57Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38358468921,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:57Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38311153974,
+      "head_branch": "gather-in-graph-opt-v3",
+      "head_sha": "b022b7cf51f61a637834c58ed64c97767cd7001f",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-12T21:31:23Z",
+      "head_repository": {
+        "id": 1280708732,
+        "full_name": "dracometeorx/triton-ascend",
+        "owner": {
+          "login": "dracometeorx"
+        }
+      }
+    },
+    {
+      "id": 38311153570,
+      "head_branch": "gather-in-graph-opt-v3",
+      "head_sha": "b022b7cf51f61a637834c58ed64c97767cd7001f",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-12T21:31:22Z",
+      "head_repository": {
+        "id": 1280708732,
+        "full_name": "dracometeorx/triton-ascend",
+        "owner": {
+          "login": "dracometeorx"
+        }
+      }
+    },
+    {
+      "id": 38311153568,
+      "head_branch": "gather-in-graph-opt-v3",
+      "head_sha": "b022b7cf51f61a637834c58ed64c97767cd7001f",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-12T21:31:22Z",
+      "head_repository": {
+        "id": 1280708732,
+        "full_name": "dracometeorx/triton-ascend",
+        "owner": {
+          "login": "dracometeorx"
+        }
+      }
+    },
+    {
+      "id": 38157196660,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:30Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38157196329,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:29Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38157196336,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:29Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38157195328,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:28Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38537408849,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:39Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537409318,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:39Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537409619,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:39Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537409065,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:39Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38537409021,
+      "head_branch": "feature/simd-simt-compile-mode-sync-main-v2",
+      "head_sha": "5a09a77379ff72add3398d05a1d595043146d7e6",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-14T08:45:39Z",
+      "head_repository": {
+        "id": 1253383280,
+        "full_name": "chj-2025/triton-ascend",
+        "owner": {
+          "login": "chj-2025"
+        }
+      }
+    },
+    {
+      "id": 38358466080,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:56Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38358466061,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:56Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38358466059,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:56Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38358466259,
+      "head_branch": "origin",
+      "head_sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-13T06:44:56Z",
+      "head_repository": {
+        "id": 1276779364,
+        "full_name": "Geofeng12138/triton-ascend",
+        "owner": {
+          "login": "Geofeng12138"
+        }
+      }
+    },
+    {
+      "id": 38311150320,
+      "head_branch": "gather-in-graph-opt-v3",
+      "head_sha": "b022b7cf51f61a637834c58ed64c97767cd7001f",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-12T21:31:20Z",
+      "head_repository": {
+        "id": 1280708732,
+        "full_name": "dracometeorx/triton-ascend",
+        "owner": {
+          "login": "dracometeorx"
+        }
+      }
+    },
+    {
+      "id": 38311150279,
+      "head_branch": "gather-in-graph-opt-v3",
+      "head_sha": "b022b7cf51f61a637834c58ed64c97767cd7001f",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-12T21:31:20Z",
+      "head_repository": {
+        "id": 1280708732,
+        "full_name": "dracometeorx/triton-ascend",
+        "owner": {
+          "login": "dracometeorx"
+        }
+      }
+    },
+    {
+      "id": 38311150334,
+      "head_branch": "gather-in-graph-opt-v3",
+      "head_sha": "b022b7cf51f61a637834c58ed64c97767cd7001f",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-12T21:31:20Z",
+      "head_repository": {
+        "id": 1280708732,
+        "full_name": "dracometeorx/triton-ascend",
+        "owner": {
+          "login": "dracometeorx"
+        }
+      }
+    },
+    {
+      "id": 38157192305,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:26Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38157192376,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:26Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38157192306,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:26Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    },
+    {
+      "id": 38157192302,
+      "head_branch": "fix/q3-scan-mode",
+      "head_sha": "519a7d63df68915a383adcde826c9397d78fb2cd",
+      "event": "pull_request_target",
+      "pull_requests": [],
+      "created_at": "2026-10-11T16:51:26Z",
+      "head_repository": {
+        "id": 1242978187,
+        "full_name": "Ritsuka314/triton-ascend",
+        "owner": {
+          "login": "Ritsuka314"
+        }
+      }
+    }
+  ],
+  "pulls": {
+    "2545": {
+      "html_url": "https://github.com/triton-lang/triton-ascend/pull/2545",
+      "number": 2545,
+      "title": "[Rebase](feat) Rebase origin/feature/simd-simt-compile-mode to origin/main",
+      "created_at": "2026-10-13T12:54:49Z",
+      "head": {
+        "sha": "1aa4a865baf84fc740606ad2e9d3f10e95388972",
+        "ref": "feature/simd-simt-compile-mode-sync-main-v2",
+        "label": "chj-2025:feature/simd-simt-compile-mode-sync-main-v2",
+        "repo": {
+          "id": 1253383280,
+          "full_name": "chj-2025/triton-ascend",
+          "owner": {
+            "login": "chj-2025"
+          }
+        }
+      },
+      "base": {
+        "sha": "f6ff3e6167e275700ab0c995c4303faf710c94c6",
+        "ref": "feature/simd-simt-compile-mode"
+      }
+    },
+    "2532": {
+      "html_url": "https://github.com/triton-lang/triton-ascend/pull/2532",
+      "number": 2532,
+      "title": "[docs](feat) update release_note version compatibility tables",
+      "created_at": "2026-10-13T06:44:52Z",
+      "head": {
+        "sha": "2ea9e40d89576fc7c6cdd75fbcc36d7584c633c3",
+        "ref": "origin",
+        "label": "Geofeng12138:origin",
+        "repo": {
+          "id": 1276779364,
+          "full_name": "Geofeng12138/triton-ascend",
+          "owner": {
+            "login": "Geofeng12138"
+          }
+        }
+      },
+      "base": {
+        "sha": "e6d75162c4b75d6d22638f8eb33bb8dc3fb3cb50",
+        "ref": "main"
+      }
+    },
+    "2244": {
+      "html_url": "https://github.com/triton-lang/triton-ascend/pull/2244",
+      "number": 2244,
+      "title": "[TritonToGraph](feat) Add A2/A3 Gather optimization",
+      "created_at": "2026-09-17T10:09:13Z",
+      "head": {
+        "sha": "3cb93bc85dd799ed135b09c7124b55de3a0ac6b0",
+        "ref": "gather-in-graph-opt-v3",
+        "label": "dracometeorx:gather-in-graph-opt-v3",
+        "repo": {
+          "id": 1280708732,
+          "full_name": "dracometeorx/triton-ascend",
+          "owner": {
+            "login": "dracometeorx"
+          }
+        }
+      },
+      "base": {
+        "sha": "be41feb66a0023c54f88add91fa34047565281c7",
+        "ref": "main-dev"
+      }
+    },
+    "2480": {
+      "html_url": "https://github.com/triton-lang/triton-ascend/pull/2480",
+      "number": 2480,
+      "title": "[Ascend](fix) classify SIMT cumsum with debug checks",
+      "created_at": "2026-10-09T03:11:51Z",
+      "head": {
+        "sha": "e7ad11d5ae767f2bc37faab092493f51250e3282",
+        "ref": "fix/q3-scan-mode",
+        "label": "Ritsuka314:fix/q3-scan-mode",
+        "repo": {
+          "id": 1242978187,
+          "full_name": "Ritsuka314/triton-ascend",
+          "owner": {
+            "login": "Ritsuka314"
+          }
+        }
+      },
+      "base": {
+        "sha": "f6ff3e6167e275700ab0c995c4303faf710c94c6",
+        "ref": "feature/simd-simt-compile-mode"
+      }
+    }
+  },
+  "histories": {
+    "2545": [
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABW4kt8s8AAAAHuxC1DA",
+        "createdAt": "2026-10-14T07:18:35Z",
+        "beforeCommit": {
+          "oid": "b9c57800cc7d1e08c518b2fc1ad85e4fea606557"
+        },
+        "afterCommit": {
+          "oid": "40d56090abc2d37dc394abc247b44cb0f1f4d21d"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABW4kt8s8AAAAHu1v0Mw",
+        "createdAt": "2026-10-14T08:31:26Z",
+        "beforeCommit": {
+          "oid": "40d56090abc2d37dc394abc247b44cb0f1f4d21d"
+        },
+        "afterCommit": {
+          "oid": "47624ce3710ebec39e32b8efce46506d85f813da"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABW4kt8s8AAAAHu6QiKw",
+        "createdAt": "2026-10-14T09:36:07Z",
+        "beforeCommit": {
+          "oid": "cadb0de13f2618aedc14e8efaa9f227d08db235d"
+        },
+        "afterCommit": {
+          "oid": "4f032f8a251df35ec44712b8e33e8bd4366bc527"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABW4kt8s8AAAAHu67_NQ",
+        "createdAt": "2026-10-14T09:45:51Z",
+        "beforeCommit": {
+          "oid": "4f032f8a251df35ec44712b8e33e8bd4366bc527"
+        },
+        "afterCommit": {
+          "oid": "0136932df1efcc2161c05127d3c1c5711df4b4d1"
+        }
+      }
+    ],
+    "2532": [
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABWz8qFs8AAAAHtWqdjA",
+        "createdAt": "2026-10-13T06:49:40Z",
+        "beforeCommit": {
+          "oid": "0e0d385986eae6b5ad260bf146ceae0f0ca7fa14"
+        },
+        "afterCommit": {
+          "oid": "994b2ea350ce9ab2908d4d2fd1ab0852ac349b01"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABWz8qFs8AAAAHtXAU2A",
+        "createdAt": "2026-10-13T06:55:18Z",
+        "beforeCommit": {
+          "oid": "994b2ea350ce9ab2908d4d2fd1ab0852ac349b01"
+        },
+        "afterCommit": {
+          "oid": "410cc543cd9653256486c8a8fd3696888116ff25"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABWz8qFs8AAAAHtXctWw",
+        "createdAt": "2026-10-13T07:02:39Z",
+        "beforeCommit": {
+          "oid": "410cc543cd9653256486c8a8fd3696888116ff25"
+        },
+        "afterCommit": {
+          "oid": "2ea9e40d89576fc7c6cdd75fbcc36d7584c633c3"
+        }
+      }
+    ],
+    "2244": [
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABRvxfds8AAAAHTwmSZA",
+        "createdAt": "2026-09-18T12:59:11Z",
+        "beforeCommit": {
+          "oid": "d8f6de12e69b1794b522dbe31949bd8624eaf9fc"
+        },
+        "afterCommit": {
+          "oid": "577150b53a03f7226fe1e818131c94cd674853bf"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABRvxfds8AAAAHcx844A",
+        "createdAt": "2026-09-28T13:33:43Z",
+        "beforeCommit": {
+          "oid": "d6231fce90948bc7418fe504ba56c95a2a0d93ad"
+        },
+        "afterCommit": {
+          "oid": "ae1cc9ab87ea789966f3dddc1695895785bf543c"
+        }
+      },
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABRvxfds8AAAAHtU48TQ",
+        "createdAt": "2026-10-13T06:16:50Z",
+        "beforeCommit": {
+          "oid": "723614b4a316fd9da4e48665961b293cb1f3fe71"
+        },
+        "afterCommit": {
+          "oid": "6e333db4789c06b6c57f346ee01ff7e051d1dcb8"
+        }
+      }
+    ],
+    "2480": [
+      {
+        "id": "HRFPE_lADOQ0N-7c8AAAABWAw3z88AAAAHuFNkRQ",
+        "createdAt": "2026-10-13T17:38:47Z",
+        "beforeCommit": {
+          "oid": "a8b0a59f56d7ba26b3e7718b7ef04d6962373098"
+        },
+        "afterCommit": {
+          "oid": "e7ad11d5ae767f2bc37faab092493f51250e3282"
+        }
+      }
+    ]
+  },
+  "comparisons": {
+    "5a09a77379ff72add3398d05a1d595043146d7e6...f6ff3e6167e275700ab0c995c4303faf710c94c6": {
+      "status": "behind",
+      "merge_base_commit": {
+        "sha": "f6ff3e6167e275700ab0c995c4303faf710c94c6"
+      }
+    },
+    "5a09a77379ff72add3398d05a1d595043146d7e6...cadb0de13f2618aedc14e8efaa9f227d08db235d": {
+      "status": "ahead",
+      "merge_base_commit": {
+        "sha": "5a09a77379ff72add3398d05a1d595043146d7e6"
+      }
+    },
+    "5a09a77379ff72add3398d05a1d595043146d7e6...4f032f8a251df35ec44712b8e33e8bd4366bc527": {
+      "status": "diverged",
+      "merge_base_commit": {
+        "sha": "7931acae188cad2017e3c24fab5d60290e188e30"
+      }
+    },
+    "8b0b5737c711bf7c8495891676cce5fedc3a76e4...e6d75162c4b75d6d22638f8eb33bb8dc3fb3cb50": {
+      "status": "diverged",
+      "merge_base_commit": {
+        "sha": "ebef084711f96f7c21c09cb77574dc18b45a029e"
+      }
+    },
+    "8b0b5737c711bf7c8495891676cce5fedc3a76e4...0e0d385986eae6b5ad260bf146ceae0f0ca7fa14": {
+      "status": "ahead",
+      "merge_base_commit": {
+        "sha": "8b0b5737c711bf7c8495891676cce5fedc3a76e4"
+      }
+    },
+    "8b0b5737c711bf7c8495891676cce5fedc3a76e4...994b2ea350ce9ab2908d4d2fd1ab0852ac349b01": {
+      "status": "diverged",
+      "merge_base_commit": {
+        "sha": "ebef084711f96f7c21c09cb77574dc18b45a029e"
+      }
+    },
+    "8b0b5737c711bf7c8495891676cce5fedc3a76e4...410cc543cd9653256486c8a8fd3696888116ff25": {
+      "status": "diverged",
+      "merge_base_commit": {
+        "sha": "ebef084711f96f7c21c09cb77574dc18b45a029e"
+      }
+    },
+    "b022b7cf51f61a637834c58ed64c97767cd7001f...be41feb66a0023c54f88add91fa34047565281c7": {
+      "status": "diverged",
+      "merge_base_commit": {
+        "sha": "448adc3f333ceb555a392dab083f3c6512c26adb"
+      }
+    },
+    "b022b7cf51f61a637834c58ed64c97767cd7001f...723614b4a316fd9da4e48665961b293cb1f3fe71": {
+      "status": "ahead",
+      "merge_base_commit": {
+        "sha": "b022b7cf51f61a637834c58ed64c97767cd7001f"
+      }
+    },
+    "519a7d63df68915a383adcde826c9397d78fb2cd...f6ff3e6167e275700ab0c995c4303faf710c94c6": {
+      "status": "behind",
+      "merge_base_commit": {
+        "sha": "f6ff3e6167e275700ab0c995c4303faf710c94c6"
+      }
+    },
+    "519a7d63df68915a383adcde826c9397d78fb2cd...a8b0a59f56d7ba26b3e7718b7ef04d6962373098": {
+      "status": "ahead",
+      "merge_base_commit": {
+        "sha": "519a7d63df68915a383adcde826c9397d78fb2cd"
+      }
+    }
+  },
+  "source_run": "https://github.com/tianli-Backkom/Triton-Ascend_monitor/actions/runs/38546744486"
+}
